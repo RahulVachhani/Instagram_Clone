@@ -37,3 +37,9 @@ repos:
         entry: bash scripts/check_migrations.sh
         language: system
         types: [python]
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.11.2  # Use the latest version
+    hooks:
+      - id: ruff
+        args: ["--fix"]

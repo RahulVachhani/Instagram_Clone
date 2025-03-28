@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
+
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 User = get_user_model()
@@ -20,7 +19,7 @@ class JWTAuthenticationFromCookie(BaseAuthentication):
 
             return (user, None)
 
-        except Exception as e:
+        except Exception:
             if refresh_token:
                 try:
                     new_access_token, new_refresh_token = self.refresh_access_token(

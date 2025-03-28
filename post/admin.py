@@ -6,7 +6,7 @@ from .models import Like, Post
 
 
 @admin.register(Post)
-class UserAdmin(admin.ModelAdmin):
+class PostAdmin(admin.ModelAdmin):
     list_display = ["id", "profile"]
 
 

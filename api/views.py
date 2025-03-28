@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.utils.timezone import timedelta
+
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -165,7 +166,7 @@ class FollowProfile(APIView):
             Follower.objects.create(
                 follower=follower_user_profile, following=following_user_profile
             )
-        except:
+        except Exception:
             return Response(
                 {"error": ["Something went wrong when creating a follow request"]}
             )

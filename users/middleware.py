@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
+
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 User = get_user_model()
