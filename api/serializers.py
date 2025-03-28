@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.utils import timezone
 from rest_framework import serializers
 
+from post.models import Like, Post
 from users.models import Profile
 
 User = get_user_model()
@@ -39,6 +40,12 @@ class LoginSerializer(serializers.Serializer):
         return user
 
 
+class PostSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ["id", "image", "description", "like_count"]
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", read_only=True)
     email = serializers.CharField(source="user.email", read_only=True)
@@ -48,6 +55,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     follower_count = serializers.IntegerField(read_only=True)
     following_count = serializers.IntegerField(read_only=True)
     is_following = serializers.SerializerMethodField(read_only=True)
+    posts = PostSerializers(many=True, read_only=True, source="posts.all")
 
     class Meta:
         model = Profile
@@ -64,6 +72,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "follower_count",
             "following_count",
             "is_following",
+            "posts",
         ]
 
     def update(self, instance, validated_data):
@@ -114,3 +123,31 @@ class UserProfileFollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["id", "username", "email", "first_name", "last_name", "image"]
+
+
+class UserHomePostSerializers(serializers.ModelSerializer):
+    username = serializers.CharField(source="profile.user.username")
+    profile_image = serializers.CharField(source="profile.image.url")
+    like_count = serializers.IntegerField(read_only=True)
+    is_liked = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = [
+            "id",
+            "image",
+            "description",
+            "like_count",
+            "username",
+            "profile_image",
+            "is_liked",
+        ]
+
+    def get_is_liked(self, obj):
+        """Check if the authenticated user follows this profile"""
+        request = self.context.get("request")
+
+        if request and request.user:
+            if obj.likes.filter(profile=request.user.profile).exists():
+                return True
+            return False

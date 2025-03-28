@@ -6,10 +6,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from post.models import Like, Post
 from users.models import Follower, Profile
 
 from .serializers import (
     LoginSerializer,
+    PostSerializers,
+    UserHomePostSerializers,
     UserProfileFollowerSerializer,
     UserProfileSerializer,
     UserSerializer,
@@ -242,3 +245,60 @@ class SearchUserAPIview(APIView):
         profile = [u.profile for u in user]
         serializer = UserProfileSerializer(profile, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PostGenericView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostSerializers
+
+    def get_queryset(self):
+        profile_id = self.kwargs.get("id")
+        if profile_id:
+            return Post.objects.filter(profile__id=profile_id)
+        """Retrieve only the posts created by the logged-in user."""
+        return Post.objects.filter(profile__user=self.request.user)
+
+    def perform_create(self, serializer):
+        profile = Profile.objects.get(user=self.request.user)
+        serializer.save(profile=profile)
+
+
+class GetPostByFollower(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        following_profiles = request.user.profile.following_users.all()
+        follower_profiles = [f.following for f in following_profiles]
+        posts = sorted(
+            [p for f in follower_profiles for p in f.posts.all()],
+            key=lambda post: post.created_at,
+            reverse=True,  # Descending order (latest first)
+        )
+
+        serializer = UserHomePostSerializers(
+            posts, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PostLikedAPIview(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id):
+        post = Post.objects.filter(id=id)
+        if not post.exists():
+            return Response(
+                {"message": ["post not found"]}, status=status.HTTP_404_NOT_FOUND
+            )
+        post = post.first()
+        liked, created = Like.objects.get_or_create(
+            post=post, profile=request.user.profile
+        )
+        if not created:
+            liked.delete()
+            return Response(
+                {"message": ["successfully unlike post"]}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"message": ["successfully like post"]}, status=status.HTTP_200_OK
+        )

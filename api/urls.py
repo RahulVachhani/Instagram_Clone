@@ -14,4 +14,10 @@ urlpatterns = [
     path("user/profile/<str:id>/following/", views.FollowingProfile.as_view()),
     # Search User
     path("user/search/", views.SearchUserAPIview.as_view()),
+    # Post
+    path("user/posts/", views.PostGenericView.as_view()),
+    path("user/posts/<str:id>/", views.PostGenericView.as_view()),
+    path("post/<str:id>/like/", views.PostLikedAPIview.as_view()),
+    # Home
+    path("user/home/", views.GetPostByFollower.as_view()),
 ]
