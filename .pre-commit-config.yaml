@@ -1,0 +1,40 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace  # Removes trailing spaces
+      - id: end-of-file-fixer  # Ensures files end with a newline
+      - id: check-yaml  # Checks valid YAML files
+      - id: check-json  # Checks valid JSON files
+
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black  # Auto-format Python files
+        args: ["--line-length=88"]
+
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort  # Sorts imports
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.3
+    hooks:
+      - id: bandit
+        args: ["-r", "instagram/"]  # Security checks for Django code
+
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.8.0
+    hooks:
+      - id: pip-audit  # Checks for insecure dependencies
+
+  - repo: local
+    hooks:
+      - id: check-migrations
+        name: Check Django Migrations
+        entry: bash scripts/check_migrations.sh
+        language: system
+        types: [python]

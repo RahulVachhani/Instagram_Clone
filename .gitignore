@@ -1,0 +1,61 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django migrations
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Virtual environments
+venv/
+env/
+
+# Secret files & configurations
+*.env
+.env.local
+.env.production
+.env.*
+
+# Database & SQLite files
+*.sqlite3
+*.db
+
+# Logs & Debugging
+logs/
+*.log
+debug.log
+
+# Static & Media files (only if auto-generated)
+staticfiles/
+media/
+
+# Compiled & Cache files
+*.mo
+*.swp
+*.swo
+*.swn
+*.swd
+.nox/
+*.cache
+*.pytest_cache/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+
+# Docker & Deployment
+docker-compose.override.yml
+.dockerignore
+
+# Node.js dependencies (if frontend included)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+#
