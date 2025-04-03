@@ -12,10 +12,10 @@ venv/
 env/
 
 # Secret files & configurations
-*.env
-.env.local
-.env.production
-.env.*
+# *.env
+# .env.local
+# .env.production
+# .env.*
 
 # Database & SQLite files
 *.sqlite3
