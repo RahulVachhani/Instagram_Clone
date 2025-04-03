@@ -56,6 +56,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     follower_count = serializers.IntegerField(read_only=True)
     following_count = serializers.IntegerField(read_only=True)
     is_following = serializers.SerializerMethodField(read_only=True)
+    likes = serializers.SerializerMethodField(read_only=True)
     posts = PostSerializers(many=True, read_only=True, source="posts.all")
 
     class Meta:
@@ -73,6 +74,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "follower_count",
             "following_count",
             "is_following",
+            "likes",
             "posts",
         ]
 
@@ -99,6 +101,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 return None
             return obj.followers.filter(follower__user=request.user).exists()
         return False
+
+    def get_likes(self, obj):
+        return obj.liked_by.count()
 
     def to_representation(self, instance):
         """Dynamically remove 'is_following' if user is viewing their own profile"""

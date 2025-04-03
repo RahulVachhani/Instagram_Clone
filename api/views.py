@@ -303,3 +303,21 @@ class PostLikedAPIview(APIView):
         return Response(
             {"message": ["successfully like post"]}, status=status.HTTP_200_OK
         )
+
+
+class getLikedPost(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_profile = request.user.profile
+        liked_Post = Like.objects.filter(profile=user_profile).select_related("post")
+        liked_Posts = [post.post for post in liked_Post]
+        serializers = PostSerializers(liked_Posts, many=True)
+        return Response(
+            {
+                "message": "Successfully Retrived Liked Posts",
+                "total count": len(liked_Posts),
+                "posts": serializers.data,
+            },
+            status=status.HTTP_200_OK,
+        )

@@ -20,4 +20,5 @@ urlpatterns = [
     path("post/<str:id>/like/", views.PostLikedAPIview.as_view()),
     # Home
     path("user/home/", views.GetPostByFollower.as_view()),
+    path("user/liked/post/", views.getLikedPost.as_view()),
 ]
